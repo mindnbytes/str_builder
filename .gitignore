@@ -1,0 +1,28 @@
+# Build outputs
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# Local binaries
+/main
+/test
+/tests
+/test_*
+!/test_*.c
+!/test_*.h
+
+# Build directories
+/build/
+/dist/
+
+# Debug symbols / crash dumps
+*.dSYM/
+*.core
+core
+
+# Editor / OS noise
+.DS_Store

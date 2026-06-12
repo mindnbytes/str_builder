@@ -1,0 +1,52 @@
+#include "str_builder.h"
+#include <stdint.h>
+#include <stdlib.h>
+
+// Private helper, grow internal array
+// return false if it fais, true otherwise
+static bool sb_grow(StrBuilder *sb) {
+  // check next cap overflow
+  if (sb->cap > SIZE_MAX / 2) // technically, extra / sizeof(char), but that's 1
+    return false;
+  size_t new_cap = sb->cap == 0 ? 16 : sb->cap * 2;
+
+  char *new_data = realloc(sb->data, new_cap * sizeof(sb->data[0]));
+  if (new_data == NULL)
+    return false;
+
+  sb->data = new_data;
+  sb->cap = new_cap;
+
+  return true;
+}
+
+// Must call to initialize a valid object
+// The object is valid only when true is returned
+// Returns false on failures:
+// - sb is NULL
+// - failing to allocate memory
+bool sb_init(StrBuilder *sb) {
+  // ensure clean state
+  if (!sb_free(sb))
+    return false;
+  // allocate
+  if (!sb_grow(sb))
+    return false;
+  // valid c str invariant
+  sb->data[sb->len] = '\0';
+  return true;
+}
+
+// Must call to free internal memory
+// Object isn't valid after free.
+// Returns true on success, false - on failure
+// failure: sb is NULL
+bool sb_free(StrBuilder *sb) {
+  if (sb == NULL)
+    return false;
+  free(sb->data);
+  sb->len = 0;
+  sb->cap = 0;
+  sb->data = NULL;
+  return true;
+}
