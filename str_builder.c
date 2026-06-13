@@ -21,14 +21,21 @@ static bool sb_grow(StrBuilder *sb) {
 }
 
 // Must call to initialize a valid object
+// don't call on the pointer to already initialized
+// object!
 // The object is valid only when true is returned
 // Returns false on failures:
 // - sb is NULL
 // - failing to allocate memory
+// Note: calling init on already initialized and valid
+// object will lead to memory leak
 bool sb_init(StrBuilder *sb) {
-  // ensure clean state
-  if (!sb_free(sb))
+  if (sb == NULL)
     return false;
+  // ensure clean state
+  sb->cap = 0;
+  sb->len = 0;
+  sb->data = NULL;
   // allocate
   if (!sb_grow(sb))
     return false;
@@ -41,6 +48,8 @@ bool sb_init(StrBuilder *sb) {
 // Object isn't valid after free.
 // Returns true on success, false - on failure
 // failure: sb is NULL
+// freeing uninitialized value propagates UB
+// as in C standard
 bool sb_free(StrBuilder *sb) {
   if (sb == NULL)
     return false;
