@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 // String Builder Invariants
-// Valid iff initialized: st_init(&sb)
+// Valid iff initialized: sb_init(&sb)
 // Valid object has:
 // - data != NULL
 // - cap >= 1 (allocated bytes)

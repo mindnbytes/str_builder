@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 // Private helper, grow internal array
-// return false if it fais, true otherwise
+// return false if it fails, true otherwise
 static bool sb_grow(StrBuilder *sb) {
   // check next cap overflow
   if (sb->cap > SIZE_MAX / 2) // technically, extra / sizeof(char), but that's 1

@@ -20,7 +20,7 @@ static void test_init_null(void) {
 }
 // Note: with cap == 0, internal grow can only fail on
 // allocator returning NULL, we don't test it.
-// We test failure to grow with cap > 0 later inderectly
+// We test failure to grow with cap > 0 later indirectly
 // via testing push.
 
 static void test_init_ok(void) {
@@ -31,7 +31,7 @@ static void test_init_ok(void) {
   assert(sb_free(&sb));
 }
 
-// free -> cannonical uninitialized object
+// free -> canonical uninitialized object
 static void test_free_null(void) {
   StrBuilder *sb = NULL;
   assert(!sb_free(sb));
