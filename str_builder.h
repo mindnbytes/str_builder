@@ -7,9 +7,10 @@
 // String Builder Invariants
 // Valid iff initialized: st_init(&sb)
 // Valid object has:
-// - len >= 0 (meaningful characters)
+// - data != NULL
 // - cap >= 1 (allocated bytes)
-// - data is allocated
+// - len + 1 <= cap
+// - len counts meaningful characters only
 // - data[len] = '\0'
 // - data is always a valid C string
 // Invalid after sb_free(&sb)
