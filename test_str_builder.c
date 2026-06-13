@@ -51,8 +51,9 @@ static void test_free_null(void) {
   assert(!sb_free(sb));
 }
 
-static void test_free_initialized(void) {
-  StrBuilder sb = {0};
+static void test_free_after_init(void) {
+  StrBuilder sb;
+  assert(sb_init(&sb));
   assert(sb_free(&sb));
   assert(sb.len == 0 && sb.cap == 0 && sb.data == NULL);
 }
@@ -62,7 +63,7 @@ int main(void) {
   RUN_TEST(test_init_ok);
   RUN_TEST(test_init_on_inited);
   RUN_TEST(test_free_null);
-  RUN_TEST(test_free_initialized);
+  RUN_TEST(test_free_after_init);
 
   puts("All tests passed.");
   return EXIT_SUCCESS;
