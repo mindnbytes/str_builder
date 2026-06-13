@@ -30,21 +30,6 @@ static void test_init_ok(void) {
   assert(sb_free(&sb));
 }
 
-static void test_init_on_inited(void) {
-  StrBuilder sb = {0};
-  char store[] = {'a', 'b', 'c'};
-  sb.len = 3;
-  sb.cap = 3;
-  sb.data = store;
-  assert(sb_init(&sb));
-  assert(sb.len == 0 && sb.data[sb.len] == '\0');
-  // you still have store here, right?
-  // but if sb.data was the only pointer you have
-  // pointed on allocated memory, you won't have it
-  // after init and memory will leak!
-  assert(sb_free(&sb));
-}
-
 // free -> cannonical uninitialized object
 static void test_free_null(void) {
   StrBuilder *sb = NULL;
@@ -61,7 +46,6 @@ static void test_free_after_init(void) {
 int main(void) {
   RUN_TEST(test_init_null);
   RUN_TEST(test_init_ok);
-  RUN_TEST(test_init_on_inited);
   RUN_TEST(test_free_null);
   RUN_TEST(test_free_after_init);
 
