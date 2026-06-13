@@ -46,10 +46,10 @@ bool sb_init(StrBuilder *sb) {
 
 // Must call to free internal memory
 // Object isn't valid after free.
-// Returns true on success, false - on failure
-// failure: sb is NULL
-// freeing uninitialized value propagates UB
-// as in C standard
+// Returns false if sb is NULL.
+// Otherwise releases the internal buffer and returns true.
+// Calling sb_free on an uninitialized StrBuilder object is undefined behavior,
+// because sb->data may contain an indeterminate pointer value.
 bool sb_free(StrBuilder *sb) {
   if (sb == NULL)
     return false;
