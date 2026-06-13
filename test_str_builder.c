@@ -26,6 +26,7 @@ static void test_init_null(void) {
 static void test_init_ok(void) {
   StrBuilder sb;
   assert(sb_init(&sb));
+  assert(sb.data != NULL && sb.cap >= 1 && sb.len + 1 <= sb.cap);
   assert(sb.len == 0 && sb.data[sb.len] == '\0');
   assert(sb_free(&sb));
 }
