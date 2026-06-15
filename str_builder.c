@@ -1,6 +1,8 @@
 #include "str_builder.h"
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Private helper, grow internal array
 // return false if it fails, true otherwise
@@ -17,6 +19,30 @@ static bool sb_grow(StrBuilder *sb) {
   sb->data = new_data;
   sb->cap = new_cap;
 
+  return true;
+}
+// Private helper for push operations.
+// Trust caller that pointed to memory
+// has at least n characters to read.
+// Performs atomic mutation. If it returns false,
+// it guarantees the provided pointer hasn't been changed.
+// Writes n characters from src to internal buffer and
+// returns true. Preserves valid string builder invariants.
+static bool sb_push_n(StrBuilder *sb, const char *src, size_t n) {
+  // no-op
+  if (n == 0)
+    return true;
+  // grow
+  if (sb->len + n + 1 > sb->cap) {
+    if (!sb_grow(sb))
+      return false;
+  }
+  // copy
+  char *dst = sb->data + sb->len;
+  strncpy(dst, src, n);
+  // correct state
+  sb->len += n;
+  sb->data[sb->len] = '\0';
   return true;
 }
 
@@ -58,4 +84,15 @@ bool sb_free(StrBuilder *sb) {
   sb->cap = 0;
   sb->data = NULL;
   return true;
+}
+
+// Appends C string and returns true.
+// Returns false on failure, doesn't mutate
+// StrBuilder object in this case.
+// Note: always use valid (initialized) sb object.
+bool sb_push_cstr(StrBuilder *sb, const char *cstr) {
+  if (sb == NULL || cstr == NULL)
+    return false;
+  size_t n = strlen(cstr);
+  return sb_push_n(sb, cstr, n);
 }
