@@ -91,9 +91,10 @@ bool sb_free(StrBuilder *sb) {
 }
 
 // Appends C string and returns true.
-// Returns false on failure, doesn't mutate
-// StrBuilder object in this case.
-// Note: always use valid (initialized) sb object.
+// Returns false on failure
+// On failure, logical string content and len are unchanged; builder remains
+// valid; capacity may have changed. Note: always use valid (initialized) sb
+// object.
 bool sb_push_cstr(StrBuilder *sb, const char *cstr) {
   if (sb == NULL || cstr == NULL)
     return false;
