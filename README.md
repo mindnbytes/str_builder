@@ -2,7 +2,7 @@
 
 A small educational string builder written in C.
 
-The goal of this project is to practice manual memory management, object lifetime, and invariant-based design in C.
+The goal of this project is to practice manual memory management, object lifetime, dynamic growth, and invariant-based design in C.
 
 ## Design
 
@@ -17,7 +17,7 @@ sb.len + 1 <= sb.cap
 sb.data[sb.len] == '\0'
 ```
 
-`len` counts only meaningful characters and does not include the terminating null byte.
+`len` counts meaningful characters only. It does not include the terminating null byte.
 
 `cap` is the total allocated capacity, including space for the terminating `'\0'`.
 
@@ -41,17 +41,18 @@ After `sb_free`, the builder is no longer valid for normal use unless initialize
 
 ## Current functionality
 
-Currently implemented:
+Implemented:
 
 * `sb_init` — initialize an empty string builder
 * `sb_free` — release the internal buffer and reset the object
+* `sb_push_cstr` — append a null-terminated C string
 
-Planned functionality:
+Internal implementation details:
 
-* append a character
-* append a C string
-* reset while keeping allocated memory
-* grow capacity as needed
+* the builder grows dynamically when needed
+* append operations preserve a valid C-string invariant
+* failed append operations leave the logical string content and `len` unchanged
+* capacity may change during a failed append if growth partially succeeded
 
 ## Scope
 
@@ -64,4 +65,4 @@ It is a learning project focused on:
 * strong invariants
 * simple error handling
 * safe dynamic memory growth
-
+* reasoning about C strings and null termination
