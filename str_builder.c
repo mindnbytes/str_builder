@@ -23,7 +23,7 @@ static bool sb_grow(StrBuilder *sb) {
 }
 // Private helper for push operations.
 // Trust caller that pointed to memory has at least n chars/bytes to read.
-// On failure, the string content and len are unchanged.
+// On failure, the logical string content and len are unchanged.
 // The builder remains valid. Capacity may have changed.
 // Writes n chars/bytes from src to internal buffer and
 // returns true. Preserves valid string builder invariants.
