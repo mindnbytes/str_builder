@@ -19,6 +19,7 @@ static void assert_valid_sb(StrBuilder *sb, const char *cstr) {
   assert(sb->cap >= 1);
   assert(sb->len + 1 <= sb->cap);
   assert(sb->data[sb->len] == '\0');
+  assert(strlen(sb->data) == sb->len);
   assert(strcmp(cstr, sb->data) == 0);
 }
 
