@@ -22,10 +22,9 @@ static bool sb_grow(StrBuilder *sb) {
   return true;
 }
 // Private helper for push operations.
-// Trust caller that pointed to memory
-// has at least n chars/bytes to read.
-// Performs atomic mutation. If it returns false,
-// it guarantees the provided pointer hasn't been changed.
+// Trust caller that pointed to memory has at least n chars/bytes to read.
+// On failure, the string content and len are unchanged.
+// The builder remains valid. Capacity may have changed.
 // Writes n chars/bytes from src to internal buffer and
 // returns true. Preserves valid string builder invariants.
 // Private helper for text fragments only; embedded '\0' is caller misuse!
@@ -33,8 +32,12 @@ static bool sb_push_n(StrBuilder *sb, const char *src, size_t n) {
   // no-op
   if (n == 0)
     return true;
+  // check for potential len overflow
+  if (n > SIZE_MAX - sb->len - 1)
+    return false;
   // grow
-  if (sb->len + n + 1 > sb->cap) {
+  size_t needed = sb->len + n + 1;
+  while (needed > sb->cap) {
     if (!sb_grow(sb))
       return false;
   }
