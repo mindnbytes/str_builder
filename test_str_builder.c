@@ -13,6 +13,15 @@
     fn();                                                                      \
   } while (0)
 
+// validate invariant helper
+static void assert_valid_sb(StrBuilder *sb, const char *cstr) {
+  assert(sb->data != NULL);
+  assert(sb->cap >= 1);
+  assert(sb->len + 1 <= sb->cap);
+  assert(sb->data[sb->len] == '\0');
+  assert(strcmp(cstr, sb->data) == 0);
+}
+
 // init -> the only way to initialize a valid object
 static void test_init_null(void) {
   StrBuilder *sb = NULL;
@@ -26,8 +35,7 @@ static void test_init_null(void) {
 static void test_init_ok(void) {
   StrBuilder sb;
   assert(sb_init(&sb));
-  assert(sb.data != NULL && sb.cap >= 1 && sb.len + 1 <= sb.cap);
-  assert(sb.len == 0 && sb.data[sb.len] == '\0');
+  assert_valid_sb(&sb, "");
   assert(sb_free(&sb));
 }
 
@@ -61,7 +69,7 @@ static void test_push_cstr_empty(void) {
   StrBuilder sb;
   assert(sb_init(&sb));
   assert(sb_push_cstr(&sb, ""));
-  assert(sb.len == 0 && sb.data[sb.len] == '\0');
+  assert_valid_sb(&sb, "");
 
   assert(sb_free(&sb));
 }
@@ -73,7 +81,7 @@ static void test_push_cstr_many(void) {
   const char *first = "Hello world! ";
   const char *second = "It's me 42. ";
   const char *last = "So long, and thanks for all the fish";
-  char result[100];
+  static char result[100];
   int n = snprintf(result, 100, "%s%s%s", first, second, last);
 
   assert(sb_push_cstr(&sb, first));
@@ -81,11 +89,31 @@ static void test_push_cstr_many(void) {
   assert(sb_push_cstr(&sb, last));
 
   assert((size_t)n == sb.len);
-  assert(strcmp(result, sb.data) == 0);
+  assert_valid_sb(&sb, result);
 
   assert(sb_free(&sb));
 }
 
+// append a string much larger than initial capacity
+static void test_push_cstr_large(void) {
+  StrBuilder sb;
+  assert(sb_init(&sb));
+
+  static char large[101];
+  for (int i = 0; i < 100; i++) {
+    large[i] = 'c';
+  }
+  large[100] = '\0';
+
+  assert(sb_push_cstr(&sb, large));
+  assert_valid_sb(&sb, large);
+  // assert(sb.len == 100);
+
+  assert(sb_free(&sb));
+}
+
+// We intentionally corrupt internal state to drive a hard-to-reach
+// overflow/growth path.
 static void test_push_cstr_inject_big_cap(void) {
   StrBuilder sb;
   assert(sb_init(&sb));
@@ -112,6 +140,7 @@ int main(void) {
   RUN_TEST(test_push_cstr_null);
   RUN_TEST(test_push_cstr_empty);
   RUN_TEST(test_push_cstr_many);
+  RUN_TEST(test_push_cstr_large);
   RUN_TEST(test_push_cstr_inject_big_cap);
 
   puts("All tests passed.");
