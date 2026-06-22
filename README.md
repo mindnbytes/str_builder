@@ -46,6 +46,7 @@ Implemented:
 * `sb_init` — initialize an empty string builder
 * `sb_free` — release the internal buffer and reset the object
 * `sb_push_cstr` — append a null-terminated C string
+* `sb_push_char` — append a char
 
 Internal implementation details:
 

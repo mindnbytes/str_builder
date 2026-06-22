@@ -101,3 +101,13 @@ bool sb_push_cstr(StrBuilder *sb, const char *cstr) {
   size_t n = strlen(cstr);
   return sb_push_n(sb, cstr, n);
 }
+
+// Appends one char, returns true on success.
+// On failure, logical string content and len are unchanged; builder remains
+// valid; capacity may have changed. Note: always use valid (initialized)
+// string builder object.
+bool sb_push_char(StrBuilder *sb, const char c) {
+  if (sb == NULL)
+    return false;
+  return sb_push_n(sb, &c, 1);
+}

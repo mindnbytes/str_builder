@@ -23,5 +23,6 @@ typedef struct {
 bool sb_init(StrBuilder *sb);
 bool sb_free(StrBuilder *sb);
 bool sb_push_cstr(StrBuilder *sb, const char *cstr);
+bool sb_push_char(StrBuilder *sb, const char c);
 
 #endif

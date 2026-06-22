@@ -133,6 +133,24 @@ static void test_push_cstr_inject_big_cap(void) {
   assert(sb_free(&sb));
 }
 
+static void test_push_char_null(void) { assert(!sb_push_char(NULL, 'c')); }
+
+static void test_push_char_many(void) {
+  StrBuilder sb;
+  assert(sb_init(&sb));
+
+  static char large[101];
+  for (int i = 0; i < 100; i++) {
+    large[i] = 'c';
+    assert(sb_push_char(&sb, large[i]));
+  }
+  large[100] = '\0';
+
+  assert_valid_sb(&sb, large);
+
+  assert(sb_free(&sb));
+}
+
 int main(void) {
   RUN_TEST(test_init_null);
   RUN_TEST(test_init_ok);
@@ -143,6 +161,8 @@ int main(void) {
   RUN_TEST(test_push_cstr_many);
   RUN_TEST(test_push_cstr_large);
   RUN_TEST(test_push_cstr_inject_big_cap);
+  RUN_TEST(test_push_char_null);
+  RUN_TEST(test_push_char_many);
 
   puts("All tests passed.");
   return EXIT_SUCCESS;
