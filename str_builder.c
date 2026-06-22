@@ -107,7 +107,7 @@ bool sb_push_cstr(StrBuilder *sb, const char *cstr) {
 // valid; capacity may have changed. Note: always use valid (initialized)
 // string builder object.
 bool sb_push_char(StrBuilder *sb, const char c) {
-  if (sb == NULL)
+  if (sb == NULL || c == '\0')
     return false;
   return sb_push_n(sb, &c, 1);
 }

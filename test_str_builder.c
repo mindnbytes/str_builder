@@ -133,7 +133,13 @@ static void test_push_cstr_inject_big_cap(void) {
   assert(sb_free(&sb));
 }
 
-static void test_push_char_null(void) { assert(!sb_push_char(NULL, 'c')); }
+static void test_push_char_null(void) {
+  assert(!sb_push_char(NULL, 'c'));
+  StrBuilder sb;
+  assert(sb_init(&sb));
+  assert(!sb_push_char(&sb, '\0'));
+  assert(sb_free(&sb));
+}
 
 static void test_push_char_many(void) {
   StrBuilder sb;
