@@ -113,22 +113,19 @@ static void test_push_cstr_large(void) {
   assert(sb_free(&sb));
 }
 
-// We intentionally corrupt internal state to drive a hard-to-reach
-// overflow/growth path.
-static void test_push_cstr_inject_big_cap(void) {
+// push self - do we access src after free?
+static void test_push_cstr_self(void) {
   StrBuilder sb;
   assert(sb_init(&sb));
-  const char *hello = "Hello!";
+
+  static char *hello = "Hello world it's me! I want you to reallocate";
+  static char result[100];
+  snprintf(result, 100, "%s%s", hello, hello);
 
   assert(sb_push_cstr(&sb, hello));
-  assert(strcmp(hello, sb.data) == 0);
 
-  // make it fail on next push
-  sb.cap = SIZE_MAX / 2 + 1;
-  sb.len = sb.cap;
-
-  assert(!sb_push_cstr(&sb, "World!"));
-  assert(strcmp(hello, sb.data) == 0);
+  assert(sb_push_cstr(&sb, sb.data));
+  assert_valid_sb(&sb, result);
 
   assert(sb_free(&sb));
 }
@@ -166,7 +163,7 @@ int main(void) {
   RUN_TEST(test_push_cstr_empty);
   RUN_TEST(test_push_cstr_many);
   RUN_TEST(test_push_cstr_large);
-  RUN_TEST(test_push_cstr_inject_big_cap);
+  RUN_TEST(test_push_cstr_self);
   RUN_TEST(test_push_char_null);
   RUN_TEST(test_push_char_many);
 

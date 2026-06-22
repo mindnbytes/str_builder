@@ -35,11 +35,25 @@ static bool sb_push_n(StrBuilder *sb, const char *src, size_t n) {
   // check for potential len overflow
   if (n > SIZE_MAX - sb->len - 1)
     return false;
+  // check if src is internal and compute offset
+  bool src_is_internal = false;
+  size_t src_offset = 0;
+  for (size_t i = 0; i <= sb->len; i++) {
+    if (src == sb->data + i) {
+      src_is_internal = true;
+      src_offset = i;
+      break;
+    }
+  }
   // grow
   size_t needed = sb->len + n + 1;
   while (needed > sb->cap) {
     if (!sb_grow(sb))
       return false;
+    // adjust src if internal
+    if (src_is_internal) {
+      src = sb->data + src_offset;
+    }
   }
   // copy
   char *dst = sb->data + sb->len;
